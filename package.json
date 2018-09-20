@@ -57,7 +57,8 @@
     "get-stream": "^3.0.0",
     "lodash": "^4.17.10",
     "media-typer": "^0.3.0",
-    "multiparty": "^4.1.4"
+    "multiparty": "^4.1.4",
+    "xml-js": "^1.6.8"
   },
   "devDependencies": {
     "@adonisjs/fold": "^4.0.9",

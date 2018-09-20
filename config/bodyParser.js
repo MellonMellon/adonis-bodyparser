@@ -53,6 +53,55 @@ module.exports = {
 
   /*
   |--------------------------------------------------------------------------
+  | XML Parser
+  |--------------------------------------------------------------------------
+  |
+  | Below settings are applied when request body contains XML payload. If
+  | you want body parser to ignore XML payload, then simply set `types`
+  | to an empty array.
+  */
+  xml: {
+    /*
+    |--------------------------------------------------------------------------
+    | limit
+    |--------------------------------------------------------------------------
+    |
+    | Defines the limit of JSON that can be sent by the client. If payload
+    | is over 1mb it will not be processed.
+    |
+    */
+    limit: '1mb',
+
+    /*
+    |--------------------------------------------------------------------------
+    | strict
+    |--------------------------------------------------------------------------
+    |
+    | When `scrict` is set to true, body parser will only parse Arrays and
+    | Object. Otherwise everything parseable by `JSON.parse` is parsed.
+    |
+    */
+    compact: true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | types
+    |--------------------------------------------------------------------------
+    |
+    | Which content types are processed as JSON payloads. You are free to
+    | add your own types here, but the request body should be parseable
+    | by `JSON.parse` method.
+    |
+    */
+    types: [
+      'text/xml',
+      'application/xml',
+      'application/rss+xml',
+    ]
+  },
+
+  /*
+  |--------------------------------------------------------------------------
   | Raw Parser
   |--------------------------------------------------------------------------
   |

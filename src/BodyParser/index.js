@@ -10,6 +10,7 @@
 */
 
 const parse = require('co-body')
+const parseXml = require('xml-js')
 const debug = require('debug')('adonis:bodyparser')
 const Multipart = require('../Multipart')
 const FormFields = require('../FormFields')
@@ -71,6 +72,19 @@ class BodyParser {
   }
 
   /**
+   * The XML types to be used for identifying the XML request.
+   * The values are defined in `config/bodyParser.js` file
+   * under `xml` object.
+   *
+   * @attribute xmlTypes
+   *
+   * @type {Array}
+   */
+  get xmlTypes () {
+    return this.config.xml.types
+  }
+
+  /**
    * Form types to be used for identifying the form request.
    * The values are defined in `config/bodyParser.js` file
    * under `form` object.
@@ -127,6 +141,25 @@ class BodyParser {
       strict: this.config.json.strict,
       queryString: this.config.json.queryString,
       returnRawBody: true
+    })
+  }
+
+  /**
+   * Parses the XML body when `Content-Type` is set to
+   * one of the available `this.xmlTypes`.
+   *
+   * @method _parseXML
+   *
+   * @param  {Object}   req
+   *
+   * @return {Object}
+   *
+   * @private
+   */
+  _parseXML (req) {
+    return parseXml.xml2json(req, {
+      compact: this.config.xml.compact,
+      spaces: this.config.xml.spaces,
     })
   }
 
@@ -219,7 +252,7 @@ class BodyParser {
    * `config/bodyParser.js` file. It will set following
    * private properties on the request object.
    *
-   * 1. _body - The request body ( JSON or Url endcoded )
+   * 1. _body - The request body ( JSON, XML or Url endcoded )
    * 2. _files - Uploaded files
    * 3. _raw - The request raw body.
    *
@@ -281,6 +314,20 @@ class BodyParser {
 
       request.body = parsed
       request._raw = raw
+
+      await next()
+      return
+    }
+
+    /**
+     * Body is XML, so parse it and move forward
+     */
+    if (this._isType(request, this.xmlTypes)) {
+      debug('detected json body')
+      const parsed = await this._parseXML(request.request)
+
+      request.body = parsed
+      request._raw = request.raw()
 
       await next()
       return
